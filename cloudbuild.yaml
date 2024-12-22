@@ -1,0 +1,25 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/silken-realm-437403-i1/bank-campaign-model', '.']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/silken-realm-437403-i1/bank-campaign-model']
+
+- name: 'gcr.io/silken-realm-437403-i1/bank-campaign-model'
+  entrypoint: 'bash'
+  args:
+   - '-c'
+   - |
+      python -m pytest
+
+- name: 'gcr.io/cloud-builders/git'
+  args: ['clone', 'https://github.com/prithaghosh95/model-training-repo.git']
+
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['cp', 'model-training-repo/bank_campaign_model_training.py', 'us-central1-pritha-airflowd-1dd88eb7-bucket/dags']
+
+images:
+- 'gcr.io/silken-realm-437403-i1/bank-campaign-model'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
